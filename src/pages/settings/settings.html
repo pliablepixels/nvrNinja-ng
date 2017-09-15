@@ -1,0 +1,41 @@
+<!--
+  Generated template for the SettingsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+
+  <ion-navbar>
+      <button ion-button menuToggle>
+          <ion-icon name="menu"></ion-icon>
+        </button>
+    <ion-title>settings</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+
+<ion-content padding>
+  <ion-list>
+
+      <ion-label color="primary"  stacked>server url</ion-label>
+    
+      <!-- type is url to avoid auto-capitalization. smh -->
+    
+      <ion-input type="url"  [(ngModel)]="credentials.url" type="text" placeholder="http://server/zm"></ion-input>
+
+      <ion-label color="primary"  stacked>username</ion-label>
+      <ion-input type="url"  [(ngModel)]="credentials.username" type="text"></ion-input>
+
+      <ion-label color="primary" stacked>password</ion-label>
+      <ion-input [(ngModel)]="credentials.password" type="password" ></ion-input>
+  </ion-list>
+
+  
+  <button ion-button [disabled]=readonly (click)="save()">Save</button>
+  <button ion-button [disabled]=readonly color="danger" (click)="clear()">Clear</button>
+    
+
+</ion-content>

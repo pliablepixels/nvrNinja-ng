@@ -14,3 +14,88 @@
 // To declare rules for a specific mode, create a child rule
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
+
+.successToast .toast-message  {
+    background-color: #6BA45E;
+    color: white;
+}
+
+.errorToast .toast-message {
+    background-color: #BD3D32;
+    color: white;
+}
+
+.small {
+    font-size:1.2rem;
+    color:grey;
+}
+
+
+.loading-ios,
+.loading-md,
+.loading-wp {
+  .my-loading-class {
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+}
+// credit: https://forum.ionicframework.com/t/custom-modal-alert-with-html-form/47980/26
+.alertModal {
+    @media (min-height: 500px) {
+      ion-backdrop {
+        visibility: visible;
+      }
+    }
+  
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: $z-index-overlay;
+  
+    display: flex;
+  
+    align-items: center;
+    justify-content: center;
+  
+    contain: strict;
+    .modal-wrapper {
+      &,
+      .ion-page,
+      .ion-page .content,
+      .ion-page .content .scroll-content {
+        contain: content;
+        position: relative;
+        top: auto;
+        left: auto;
+       
+        background-color:$alert-background;
+  
+      }
+  
+      z-index: $z-index-overlay-wrapper;
+      display: flex;
+      overflow: hidden;
+      flex-direction: column;
+      min-width: $alert-min-width;
+      max-height: $alert-max-height;
+      opacity: 0;
+      height: auto;
+      max-width: $alert-md-max-width;
+      border-radius: $alert-md-border-radius;
+      background-color: $alert-md-background-color;
+      box-shadow: $alert-md-box-shadow;
+      border-radius: 25px;
+      padding:5px;
+      
+  
+      .ion-page .content {
+       color:$text-color;
+        
+        
+      }
+  
+      
+    }
+  }

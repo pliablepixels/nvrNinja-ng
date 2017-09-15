@@ -2,43 +2,84 @@ import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import {AuthServiceProvider} from '../providers/auth-service/auth-service'
+import {CameraServiceProvider} from '../providers/camera-service/camera-service'
+import { TranslateService } from '@ngx-translate/core';
+import {CommonUtilsProvider} from '../providers/common-utils/common-utils';
 
-import { HomePage } from '../pages/home/home';
-import { ListPage } from '../pages/list/list';
 
+
+import {constants} from '../constants/constants';
+import {Http} from '@angular/http';
+
+
+/***** START: ADAPTER SPECIFIC CODE - MODIFY FOR NEW ADAPTERS */
+// Classes for adapters in use
+import {ZmAuthServiceProvider} from '../adapters/zoneminder/providers/zm-auth-service';
+import {ZmHttpServiceProvider} from '../adapters/zoneminder/providers/zm-http-service';
+import {ZmCameraServiceProvider} from '../adapters/zoneminder/providers/zm-camera-service';
+
+
+// Modify this to associate new adapter classes
 @Component({
-  templateUrl: 'app.html'
+  templateUrl: 'app.html',
+  providers: [
+    
+    {provide: AuthServiceProvider, useClass: ZmAuthServiceProvider},
+    {provide: CameraServiceProvider, useClass: ZmCameraServiceProvider},
+    {provide: Http, useClass: ZmHttpServiceProvider}
+
+  ]
 })
+
+/***** END: ADAPTER SPECIFIC CODE*/
+
 export class MyApp {
   @ViewChild(Nav) nav: Nav;
 
-  rootPage: any = HomePage;
+ public rootPage: any = "LandingPage";
 
-  pages: Array<{title: string, component: any}>;
+  pages: Array<{title: string, component: any, auth:boolean}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
-    this.initializeApp();
+  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen, public translate: TranslateService, public utils:CommonUtilsProvider) {
+    
+   
+    this.translate.setDefaultLang('en');
+    this.translate.use('en')
+    .subscribe ( _ => {
+      console.log ("Language file loaded");
+      this.initializeApp();
+    },
+    err => {
+      console.log ("Language file load error:"+JSON.stringify(err));
+    }
+  )
+
+
+
 
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Home', component: HomePage },
-      { title: 'List', component: ListPage }
+      { title: 'Montage', component: 'MontagePage', auth:true },
+      { title: 'List', component: 'ListPage', auth:false },
+      { title: 'Settings', component: 'SettingsPage', auth:false }
+
     ];
 
   }
 
+  
   initializeApp() {
     this.platform.ready().then(() => {
-      // Okay, so the platform is ready and our plugins are available.
-      // Here you can do any higher level native things you might need.
       this.statusBar.styleDefault();
       this.splashScreen.hide();
+
+
     });
+
   }
 
   openPage(page) {
-    // Reset the content nav to have just this page
-    // we wouldn't want the back button to show in this scenario
-    this.nav.setRoot(page.component);
+    this.nav.setRoot(page.component, {auth:page.auth});
   }
 }

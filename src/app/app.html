@@ -8,7 +8,7 @@
   <ion-content>
     <ion-list>
       <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-        {{p.title}}
+        {{p.title}} <span *ngIf='p.auth'><ion-icon name="lock" color="muted-grey"></ion-icon></span>
       </button>
     </ion-list>
   </ion-content>
@@ -16,4 +16,4 @@
 </ion-menu>
 
 <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->
-<ion-nav [root]="rootPage" #content swipeBackEnabled="false"></ion-nav>
+<ion-nav  #content [root]="rootPage" [rootParams]="{auth:true}" swipeBackEnabled="false"></ion-nav>

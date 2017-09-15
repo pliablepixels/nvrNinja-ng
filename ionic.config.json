@@ -1,5 +1,15 @@
 {
   "name": "zmNinja-ng",
   "app_id": "",
-  "type": "ionic-angular"
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  },
+"proxies": [
+    {
+      "path": "/zm",
+      "proxyUrl": "https://arjunrc.ddns.net:8889/zm",
+      "rejectUnauthorized": false
+    }
+  ]
 }
