@@ -12,6 +12,13 @@ import {AuthServiceProvider} from '../../../providers/auth-service/auth-service'
 import {CommonUtilsProvider} from '../../../providers/common-utils/common-utils';
 
 
+/**
+ * 
+ * 
+ * @export
+ * @class ZmAuthServiceProvider
+ * @extends {AuthServiceProvider}
+ */
 @Injectable()
 export class ZmAuthServiceProvider extends AuthServiceProvider {
 
@@ -26,6 +33,13 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
   }
 
 
+   /**
+    * 
+    * 
+    * @param {any} credentials 
+    * @returns {Promise <string>} 
+    * @memberof ZmAuthServiceProvider
+    */
    getVersion(credentials): Promise <string> {
     return new Promise ((resolve, reject) => {
       this.http.get (credentials.url+'/api/host/getVersion.json', {withCredentials:true})
@@ -37,11 +51,24 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
   }
 
 
+  /**
+   * 
+   * 
+   * @returns {Boolean} 
+   * @memberof ZmAuthServiceProvider
+   */
   isLoggedIn(): Boolean {
     return this._isLoggedIn;
   }
 
 
+  /**
+   * 
+   * 
+   * @param {any} credentials 
+   * @returns {Promise <any>} 
+   * @memberof ZmAuthServiceProvider
+   */
   logout(credentials): Promise <any> {
     this._isLoggedIn = false;
     let url = credentials.url;

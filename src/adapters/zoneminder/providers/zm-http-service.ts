@@ -48,7 +48,7 @@ loading:any;
     this.loading.present();
     return super.post(url, body, options)
     .do((res: Response) => {
-          this.loading.dismiss();
+         this.loading.dismiss();
           this.onSuccess(res);
         }, (error: any) => {
           this.loading.dismiss();

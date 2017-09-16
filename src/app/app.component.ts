@@ -80,6 +80,7 @@ export class MyApp {
   }
 
   openPage(page) {
+    console.log ("GOING TO "+page.component);
     this.nav.setRoot(page.component, {auth:page.auth});
   }
 }

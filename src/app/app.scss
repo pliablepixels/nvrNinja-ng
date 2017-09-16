@@ -15,6 +15,14 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+
+.loading-wrapper {
+  
+      background-color:transparent !important; 
+      box-shadow: none !important;
+ 
+  }
+
 .successToast .toast-message  {
     background-color: #6BA45E;
     color: white;
@@ -31,14 +39,7 @@
 }
 
 
-.loading-ios,
-.loading-md,
-.loading-wp {
-  .my-loading-class {
-    background-color: transparent !important;
-    box-shadow: none !important;
-  }
-}
+
 // credit: https://forum.ionicframework.com/t/custom-modal-alert-with-html-form/47980/26
 .alertModal {
     @media (min-height: 500px) {

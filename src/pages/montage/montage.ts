@@ -15,16 +15,33 @@ import { DatabaseProvider } from '../../providers/database/database';
 export class MontagePage {
 
   cameras = [];
+  isDrag:Boolean = false;
+  headerColor:String = "";
+  
+  myDragulaOptions:any = {
+    moves: (el, container, handle, siblings) => {
+     
+      return this.isDrag;
+      //return this.isDrag; 
+    }
+
+  }
 
   constructor(public navCtrl: NavController, public dragulaService: DragulaService, public navParams:NavParams, public auth:AuthServiceProvider, public translate:TranslateService, public utils:CommonUtilsProvider, public camera:CameraServiceProvider, public db:DatabaseProvider) {
 
     this.refreshCameras()
-    .then (_ => this.setupDragAndDrop())
+    .then (_ => {})
     .catch (err => {
       this.utils.presentToast(this.translate.instant('MONTAGE_MONITOR_ERROR'), "error");
       this.utils.error ("error received retrieving cameras: "+ JSON.stringify(err));
 
     })
+  }
+
+  toggleDrag() {
+    this.isDrag = !this.isDrag;
+    console.log  ("ISDRAG="+this.isDrag);
+    this.headerColor = this.isDrag ? 'danger':'';
   }
 
   refreshCameras(): Promise <any> {
@@ -34,7 +51,7 @@ export class MontagePage {
     .then (succ => {credentials = succ; return this.camera.getCameras(credentials)})
     .then (_cameras => {
       this.utils.info (`retrieved ${_cameras.monitors.length} cameras`);
-      let basepath = credentials.url+"/cgi-bin/nph-zms?mode=jpeg&maxfps=3"+this.auth.getAuthKey()
+      let basepath = credentials.url+"/cgi-bin/nph-zms?mode=single&maxfps=3"+this.auth.getAuthKey()
       this.utils.verbose ("basepath="+basepath);
 
       this.cameras.length = 0;
@@ -48,13 +65,7 @@ export class MontagePage {
 
   }
 
-  setupDragAndDrop() {
-
-  	if (this.dragulaService.find('my-bag') !== undefined) {
-  			this.utils.debug ("Destroying bag");
-  	
-  	}
-
+  setupDragAndDropHandlers() {
   	
     this.dragulaService.drag.subscribe((value) => {
       this.utils.verbose(`drag: ${value[0]}`);
@@ -85,9 +96,12 @@ export class MontagePage {
   }
 
   ionViewDidEnter() {
-  	this.utils.verbose("Inside Montage Enter")
+    this.utils.verbose("Inside Montage Enter");
+    //this.setupDragAndDrop();
+  }
 
-    
+  ionViewWillUnload() {
+
   }
 
 
