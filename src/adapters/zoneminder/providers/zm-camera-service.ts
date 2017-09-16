@@ -23,7 +23,6 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
   }
 
   getCameras(credentials): Promise <any> {
-      console.log ("CAMERAS")
     let url = credentials.url;
     return this.http.get (url+'/api/monitors.json', {withCredentials:true})
     .map (res => res.json())

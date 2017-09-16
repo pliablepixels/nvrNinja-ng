@@ -4,7 +4,9 @@
   "AUTHENTICATING": "Authenticating",
   "ERROR_LOGIN": "Error trying to login",
   "SUCCESS_LOGIN": "Login success",
-  "NOT_LOGGED_IN": "You are not logged in"
+  "NOT_LOGGED_IN": "You are not logged in",
+
+  "MONTAGE_MONITOR_ERROR": "Error retrieving monitors"
 
     
 }

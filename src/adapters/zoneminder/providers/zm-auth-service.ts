@@ -3,13 +3,13 @@
 
 */
 
-
 import { Injectable } from '@angular/core';
 import { Http , URLSearchParams, RequestOptions, Headers} from '@angular/http';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import {constants} from '../../../constants/constants';
 import {AuthServiceProvider} from '../../../providers/auth-service/auth-service';
+import {CommonUtilsProvider} from '../../../providers/common-utils/common-utils';
 
 
 @Injectable()
@@ -19,7 +19,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
 
   _isLoggedIn:Boolean = false;
 
-  constructor(public http: Http) {
+  constructor(public http: Http, public utils:CommonUtilsProvider) {
     super(http);
     console.log('Hello ZMAuthServiceProvider Provider');
    
@@ -45,7 +45,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
   logout(credentials): Promise <any> {
     this._isLoggedIn = false;
     let url = credentials.url;
-    console.log ("Logging out of "+url+'/index.php?view=logout');
+    this.utils.info("Logging out of "+url+'/index.php?view=logout');
     let headers = new Headers({
       'Content-Type': 'application/x-www-form-urlencoded',
     });
@@ -59,6 +59,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
 
 
   getAuthKey () {
+    
     return this.authKey;
   }
 
@@ -74,7 +75,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
           resolve(results.config.Value == "1" ? true: false);
         }
         else {
-          console.log ("isAuth:unknown");
+          this.utils.debug ("isAuth:unknown");
           resolve (true);
         }
      
@@ -84,7 +85,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
           resolve(true) ;
         } 
         else {
-          console.log ("Odd error, not 401:"+ JSON.stringify(err));
+          this.utils.debug ("Odd error, not 401:"+ JSON.stringify(err));
           resolve (true);
 
         }
@@ -97,10 +98,10 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
     .then (_ => {
       return this.isAuthEnabled(credentials) // is auth enabled?
       .then (succ => {
-        console.log ("isAuthEnabled:"+succ);
+        this.utils.debug ("isAuthEnabled:"+succ);
         if (succ) {
           return this._login(credentials) // if yes, re-login
-          .then (succ=> {console.log (`Logged in with: ${succ}`); this._isLoggedIn = true;})
+          .then (succ=> {this.utils.debug (`Logged in with: ${succ}`); this._isLoggedIn = true;})
 
         }
         else this._isLoggedIn = true; // if no auth, always set this on
@@ -125,7 +126,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
 
       let options = new RequestOptions( {headers:headers, withCredentials: true });
       
-      console.log ("posting to "+ data.toString()+ " with "+credentials.url) 
+      this.utils.debug ("posting to "+ data.toString()+ " with "+credentials.url) 
       this.http.post (credentials.url+'/index.php',data, options)
       .toPromise()
       .then (results => {
@@ -144,9 +145,8 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
             .then (results => {
               //console.log ("AUTH PARSE=" + results.text())
               let body = results.text();
-              console.log ("here")
               let auth = body.match(constants.AUTH_KEY_MATCH)[1]
-              console.log ("AUTH="+auth)
+              this.utils.debug ("AUTH="+auth)
               this.authKey = "&auth="+auth;
               resolve (auth);
             })
