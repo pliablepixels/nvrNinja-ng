@@ -50,20 +50,12 @@ export class MontagePage {
     return this.db.get('credentials')
     .then (succ => {credentials = succ; return this.camera.getCameras(credentials)})
     .then (_cameras => {
-      this.utils.info (`retrieved ${_cameras.monitors.length} cameras`);
-      let basepath = credentials.url+"/cgi-bin/nph-zms?mode=single&maxfps=3"+this.auth.getAuthKey()
-      this.utils.verbose ("basepath="+basepath);
-
-      this.cameras.length = 0;
-      _cameras.monitors.forEach(item => {
-        let connkey = this.utils.getRandomVal(10000,60000);
-        this.cameras.push(`${basepath}&monitor=${item.Monitor.Id}&connkey=${connkey}&scale=50`)
+      this.utils.info (`retrieved ${_cameras.length} cameras`);
+      this.cameras = _cameras;
 
       });
-    })
-    
-
-  }
+    }
+  
 
   setupDragAndDropHandlers() {
   	
