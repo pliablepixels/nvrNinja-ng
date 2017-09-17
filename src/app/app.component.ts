@@ -6,6 +6,7 @@ import {AuthServiceProvider} from '../providers/auth-service/auth-service'
 import {CameraServiceProvider} from '../providers/camera-service/camera-service'
 import { TranslateService } from '@ngx-translate/core';
 import {CommonUtilsProvider} from '../providers/common-utils/common-utils';
+import {customHttpServiceProvider} from '../providers/http-service/http-service';
 
 
 
@@ -16,7 +17,6 @@ import {Http} from '@angular/http';
 /***** START: ADAPTER SPECIFIC CODE - MODIFY FOR NEW ADAPTERS */
 // Classes for adapters in use
 import {ZmAuthServiceProvider} from '../adapters/zoneminder/providers/zm-auth-service';
-import {ZmHttpServiceProvider} from '../adapters/zoneminder/providers/zm-http-service';
 import {ZmCameraServiceProvider} from '../adapters/zoneminder/providers/zm-camera-service';
 
 
@@ -27,7 +27,7 @@ import {ZmCameraServiceProvider} from '../adapters/zoneminder/providers/zm-camer
     
     {provide: AuthServiceProvider, useClass: ZmAuthServiceProvider},
     {provide: CameraServiceProvider, useClass: ZmCameraServiceProvider},
-    {provide: Http, useClass: ZmHttpServiceProvider}
+    {provide: Http, useClass: customHttpServiceProvider}
 
   ]
 })

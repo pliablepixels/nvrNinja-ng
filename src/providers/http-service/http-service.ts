@@ -11,7 +11,7 @@ import 'rxjs/add/operator/map';
 
 
 @Injectable()
-export class ZmHttpServiceProvider extends Http {
+export class customHttpServiceProvider extends Http {
 loading:any;
 
   constructor(backend: XHRBackend, defaultOptions: RequestOptions, public loadingCtrl:LoadingController) {
