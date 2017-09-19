@@ -34,6 +34,10 @@ export class CommonUtilsProvider {
     return Math.floor(Math.random()*(max-min+1)+min);
   }
 
+  getRandomTimeVal() {
+    return new Date().valueOf();
+  }
+
 
   setLogLevel(level) {
     const levels = {

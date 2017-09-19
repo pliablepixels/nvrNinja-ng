@@ -16,8 +16,11 @@ export interface CameraList {
   id?:String,
   streamingURL:String,
   snapshotURL:String,
+  function:String,
   width?:Number,
   height?:Number,
+  controllable?:Boolean,
+  others?:any
 
 }
 
@@ -33,6 +36,10 @@ export class CameraServiceProvider {
 
   getCameras(credentials?): Promise <CameraList[]> {
     throw constants.NOT_IMPLEMENTED;
+  }
+
+  refreshCameraUrls (cameras) {
+    return;
   }
 
 }
