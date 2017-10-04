@@ -1,41 +1,51 @@
 <ion-header>
-  <ion-navbar  [color]="headerColor">
+  <ion-navbar [color]="headerColor">
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
+
+    
+
     <ion-title>Home</ion-title>
 
     <ion-buttons end>
-        <button ion-button icon-only (click)="toggleDrag()">
+      <button ion-button icon-only (click)="toggleDrag()">
             <ion-icon name="move" ></ion-icon>
          </button>
+      
     </ion-buttons>
 
   </ion-navbar>
 </ion-header>
 
+<ion-footer [color]="green" *ngIf="isDrag">
+  <ion-toolbar>
+    <ion-buttons end>
+      <button  ion-button round color="primary" (click)="changeSize(1)">
+        <ion-icon name="add" ></ion-icon> &nbsp;{{'MONTAGE_SIZE_INCREASE' | translate}}
+      </button>
+      <button  ion-button round color="primary" (click)="changeSize(-1)">
+        <ion-icon name="remove" ></ion-icon> &nbsp;{{'MONTAGE_SIZE_DECREASE' | translate}}
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+
 <ion-content padding>
   <h3>{{ 'HELLO' | translate}}</h3>
 
-  <button ion-button secondary menuToggle>Toggle Menu</button>
+
+
+  <div class="grid">
+    <div class="grid-sizer grid-item-{{size}}"></div>
+    <figure class="grid-item grid-item-{{size}}" *ngFor="let item of cameras">
+      <img [src]="useSnapshot? item.snapshotURL: item.streamingURL" />
+      <figcaption>&nbsp;{{item.name}}</figcaption>
+      <button small (click)="killStream(item)">kill</button>
+    </figure>
+  </div>
 
 
 
- <ion-grid no-padding>
-    <ion-row wrap [dragula]='"camera_bag"' [dragulaModel]="cameras" [dragulaOptions]="myDragulaOptions">
-      <ion-col col-6 col-md-6 col-lg-4 col-xl-3  *ngFor="let item of cameras">
-        <ion-card>
-          <div *ngIf="isDrag">
-            <img src="{{item.snapshotURL}}" />
-          </div>
 
-          <div *ngIf="!isDrag">
-              <img src="{{item.streamingURL}}" />
-            </div>
-            
-        </ion-card>
-    
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 </ion-content>

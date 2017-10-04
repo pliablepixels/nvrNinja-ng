@@ -9,86 +9,121 @@ import { DatabaseProvider } from '../../providers/database/database';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Request, XHRBackend, RequestOptions, Response, Http, RequestOptionsArgs, Headers, ResponseContentType } from '@angular/http';
 
+declare var Packery, imagesLoaded: any;
+
 @IonicPage()
 @Component({
   selector: 'page-montage',
   templateUrl: 'montage.html'
 })
+
 export class MontagePage {
-
-  cameras = [];
-  isDrag: Boolean = false;
-  headerColor: String = "";
-  image:any;
-
+  cameras = []; 
+  isDrag: boolean = false;
+  useSnapshot: boolean = true;
+  headerColor: string = "";
+  image: any;
+  packery: any;
+  size:number = 20;
+  credentials:any;
+ 
   myDragulaOptions: any = {
     moves: (el, container, handle, siblings) => {
-
       return this.isDrag;
-      //return this.isDrag; 
     }
 
   }
 
   constructor(public navCtrl: NavController, public dragulaService: DragulaService, public navParams: NavParams, public auth: AuthServiceProvider, public translate: TranslateService, public utils: CommonUtilsProvider, public camera: CameraServiceProvider, public db: DatabaseProvider, public http: Http, public sanitizer: DomSanitizer) {
 
-    this.refreshCameras()
-      .then(_ => { 
-
-        console.log ("camera0 = "+this.cameras[0].streamingURL);
-       
+    /*this.forceRefreshCameras()
+      .then(_ => {
       })
       .catch(err => {
         this.utils.presentToast(this.translate.instant('MONTAGE_MONITOR_ERROR'), "error");
         this.utils.error("error received retrieving cameras: " + JSON.stringify(err));
 
-      })
+      })*/
   }
 
- 
 
-  
+  killStream (camera) {
+    this.camera.sendCommand (17, camera, this.credentials)
+    .then (succ => console.log ("OK:"+JSON.stringify(succ)))
+    .catch (err => console.log ("ERR:"+JSON.stringify(err)))
+  }
+
   toggleDrag() {
     this.isDrag = !this.isDrag;
     console.log("ISDRAG=" + this.isDrag);
     this.headerColor = this.isDrag ? 'danger' : '';
+    this.useSnapshot = this.isDrag;
     this.camera.refreshCameraUrls(this.cameras);
   }
 
-  refreshCameras(): Promise<any> {
+  forceRefreshCameras(): Promise<any> {
     this.cameras.length = 0;
-    let credentials;
+    
     return this.db.get('credentials')
-      .then(succ => { credentials = succ; return this.camera.getCameras(credentials) })
+      .then(succ => { this.credentials = succ; return this.camera.getCameras(this.credentials) })
       .then(_cameras => {
         this.utils.info(`retrieved ${_cameras.length} cameras`);
+       
         this.cameras = _cameras;
 
       });
   }
 
-
-  setupDragAndDropHandlers() {
-
-    this.dragulaService.drag.subscribe((value) => {
-      this.utils.verbose(`drag: ${value[0]}`);
-
-    });
-    this.dragulaService.drop.subscribe((value) => {
-      this.utils.verbose(`drop: ${JSON.stringify(value)}`);
-
-    });
-    this.dragulaService.over.subscribe((value) => {
-      this.utils.verbose(`over: ${value[0]}`);
+  getCameras(): Promise<any> {
+    return new Promise((resolve,reject) => {
+      if (this.cameras.length) {
+        this.utils.debug ("returning cached cameras");
+        resolve (this.cameras)
+      }
+      else {
+        this.utils.debug ("reloading cameras using APIs");
+        resolve (this.forceRefreshCameras());
+        
+      }
 
     });
-    this.dragulaService.out.subscribe((value) => {
-      this.utils.verbose(`out: ${value[0]}`);
-
-    });
-
   }
 
+  changeSize(num:number) {
+    this.size = this.size + (num * 5);
+    if (this.size < 5) this.size = 5;
+    if (this.size > 100) this.size = 100;
+    let instance = this;
+    setTimeout ( () => {
+      this.packery.layout();
+    },20)
+   
+  }
+
+  initializePackery() {
+    this.useSnapshot = true;
+    let instance = this;
+    setTimeout(() => {
+      var elem = document.querySelector('.grid');
+      instance.utils.debug("waiting for imagesloaded");
+      imagesLoaded(elem, function () {
+        instance.utils.debug("images loaded done, doing packery");
+        instance.packery = new Packery(elem, {
+          // options
+          itemSelector: '.grid-item',
+          percentPosition: true,
+   
+        });
+        instance.packery.once ( 'layoutComplete',function () {
+          instance.utils.debug("packery layout done, switching to live");
+          
+        })
+        instance.packery.layout();
+        this.useSnapshot = false;
+      });
+    }, 100);
+  }
+ 
   ionViewCanEnter() {
     let auth = this.navParams.get('auth');
 
@@ -100,7 +135,18 @@ export class MontagePage {
 
   ionViewDidEnter() {
     this.utils.verbose("Inside Montage Enter");
-    //this.setupDragAndDrop();
+    this.getCameras()
+    .then (_ => {
+      this.utils.verbose("calling initPackery");
+      this.initializePackery();
+    })
+    .catch(err => {
+      this.utils.presentToast(this.translate.instant('MONTAGE_MONITOR_ERROR'), "error");
+      this.utils.error("error received retrieving cameras: " + JSON.stringify(err));
+
+    });
+
+    
   }
 
   ionViewWillUnload() {

@@ -25,5 +25,13 @@ module.exports = {
   copyDragulaCss: {
         src: './node_modules/dragula/dist/dragula.min.css',
         dest: '{{BUILD}}'
+  },
+  copyPackeryJs: {
+        src: 'src/external/packery.pkgd.min.js',
+        dest: '{{BUILD}}'
+  },
+  copyImagesLoadedJs: {
+        src: 'src/external/imagesloaded.pkgd.min.js',
+        dest: '{{BUILD}}'
   }
 }
