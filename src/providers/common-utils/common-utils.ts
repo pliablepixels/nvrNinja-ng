@@ -30,12 +30,14 @@ export class CommonUtilsProvider {
     this.logConsole = val;
   }
 
-  getRandomVal(min,max): Number {
+  getRandomVal(min,max): number {
     return Math.floor(Math.random()*(max-min+1)+min);
   }
 
-  getRandomTimeVal() {
-    return new Date().valueOf();
+  getRandomTimeVal():string {
+    //return new Date().valueOf().toString();
+    let val = Math.floor(Math.random()*899999+100000);
+    return val.toString();
   }
 
 

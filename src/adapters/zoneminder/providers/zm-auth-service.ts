@@ -22,9 +22,9 @@ import {CommonUtilsProvider} from '../../../providers/common-utils/common-utils'
 @Injectable()
 export class ZmAuthServiceProvider extends AuthServiceProvider {
 
-  authKey:String='';
+  authKey:string='';
 
-  _isLoggedIn:Boolean = false;
+  _isLoggedIn:boolean = false;
 
   constructor(public http: Http, public utils:CommonUtilsProvider) {
     super(http);
@@ -57,7 +57,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
    * @returns {Boolean} 
    * @memberof ZmAuthServiceProvider
    */
-  isLoggedIn(): Boolean {
+  isLoggedIn(): boolean {
     return this._isLoggedIn;
   }
 

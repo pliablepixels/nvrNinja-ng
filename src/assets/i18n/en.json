@@ -6,7 +6,9 @@
   "SUCCESS_LOGIN": "Login success",
   "NOT_LOGGED_IN": "You are not logged in",
 
-  "MONTAGE_MONITOR_ERROR": "Error retrieving monitors"
+  "MONTAGE_MONITOR_ERROR": "Error retrieving monitors",
+  "MONTAGE_SIZE_INCREASE": "grow",
+  "MONTAGE_SIZE_DECREASE": "shrink"
 
     
 }

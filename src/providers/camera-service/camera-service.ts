@@ -11,15 +11,16 @@ import 'rxjs/add/operator/map';
 */
 
 
-export interface CameraList {
-  name:String,
-  id?:String,
-  streamingURL:String,
-  snapshotURL:String,
-  function:String,
-  width?:Number,
-  height?:Number,
-  controllable?:Boolean,
+export interface Camera {
+  name:string,
+  id?:string,
+  streamingURL:string,
+  snapshotURL:string,
+  function:string,
+  width?:number,
+  height?:number,
+  controllable?:boolean,
+  connkey?:string,
   others?:any
 
 }
@@ -34,12 +35,21 @@ export class CameraServiceProvider {
     console.log('Hello CameraServiceProvider Provider');
   }
 
-  getCameras(credentials?): Promise <CameraList[]> {
+  getCameras(credentials?): Promise <Camera[]> {
     throw constants.NOT_IMPLEMENTED;
   }
 
   refreshCameraUrls (cameras) {
     return;
+  }
+
+  killStream (camera:any, credentials?:any): Promise <any> {
+    throw constants.NOT_IMPLEMENTED;
+  }
+
+  sendCommand(cmd:any, camera:Camera, credentials?:any ): Promise <any> {
+    throw constants.NOT_IMPLEMENTED;
+
   }
 
 }

@@ -38,6 +38,7 @@ loading:any;
 
   post(url: string, body: any, options?: RequestOptionsArgs): Observable<Response> {
   
+   // console.log ("POSTING " + JSON.stringify(body));
 
     this.loading = this.loadingCtrl.create({
       spinner:"dots",

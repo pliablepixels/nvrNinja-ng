@@ -48,7 +48,7 @@ export class MontagePage {
 
 
   killStream (camera) {
-    this.camera.sendCommand (17, camera, this.credentials)
+    this.camera.killStream (camera, this.credentials)
     .then (succ => console.log ("OK:"+JSON.stringify(succ)))
     .catch (err => console.log ("ERR:"+JSON.stringify(err)))
   }
@@ -101,26 +101,34 @@ export class MontagePage {
   }
 
   initializePackery() {
+    // switch to snapshot mode
     this.useSnapshot = true;
     let instance = this;
     setTimeout(() => {
       var elem = document.querySelector('.grid');
       instance.utils.debug("waiting for imagesloaded");
+     
       imagesLoaded(elem, function () {
-        instance.utils.debug("images loaded done, doing packery");
+       // all images loaded
+        instance.utils.debug("images loaded done, instantiating packery");
         instance.packery = new Packery(elem, {
           // options
           itemSelector: '.grid-item',
           percentPosition: true,
    
         });
+        // trigger a layout after instantiating
+        instance.utils.debug("packery instantiated, forcing layout");
+        instance.packery.layout();
+       
         instance.packery.once ( 'layoutComplete',function () {
           instance.utils.debug("packery layout done, switching to live");
-          
-        })
-        instance.packery.layout();
-        this.useSnapshot = false;
+          console.log (">>>>>>>>>>>>>>>>>>>>> SNAPSHOT IS FALSE");
+          instance.useSnapshot = false;
+  
+        }) 
       });
+
     }, 100);
   }
  

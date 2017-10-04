@@ -30,11 +30,11 @@ export  class AuthServiceProvider {
     throw constants.NOT_IMPLEMENTED;
   }
 
-  isLoggedIn(): Boolean {
+  isLoggedIn(): boolean {
     throw constants.NOT_IMPLEMENTED;
   }
 
-  getAuthKey(): String {
+  getAuthKey(): string {
     throw constants.NOT_IMPLEMENTED;
   }
 
