@@ -33,5 +33,17 @@ module.exports = {
   copyImagesLoadedJs: {
         src: 'src/external/imagesloaded.pkgd.min.js',
         dest: '{{BUILD}}'
-  }
-}
+  },
+  copyHolderJs: {
+        src: './node_modules/holderjs/holder.min.js',
+        dest: '{{BUILD}}'
+  },
+ copyFontawesomeFonts: {
+    src: ['{{ROOT}}/node_modules/font-awesome/fonts/**/*'],
+    dest: '{{WWW}}/assets/fonts'
+  },
+  copyFontawesomeCss: {
+    src: ['{{ROOT}}/node_modules/font-awesome/css/font-awesome.min.css'],
+    dest: '{{WWW}}/assets/css'
+  },
+ }

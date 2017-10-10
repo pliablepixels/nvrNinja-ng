@@ -15,20 +15,20 @@ export interface Camera {
   name:string,
   id?:string,
   streamingURL:string,
-  snapshotURL:string,
-  function:string,
-  width?:number,
-  height?:number,
+  snapshotURL?:string,
+  mode:string,
+  width?:string,
+  height?:string,
   controllable?:boolean,
   connkey?:string,
-  others?:any
+  others?:any,
 
 }
 
 @Injectable()
 
 
-export class CameraServiceProvider {
+export  class CameraServiceProvider {
 
   
   constructor(public http: Http) {
@@ -44,6 +44,10 @@ export class CameraServiceProvider {
   }
 
   killStream (camera:any, credentials?:any): Promise <any> {
+    throw constants.NOT_IMPLEMENTED;
+  }
+
+  startStream (camera:any, credentials?:any)  {
     throw constants.NOT_IMPLEMENTED;
   }
 

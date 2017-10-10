@@ -4,15 +4,15 @@
       <ion-icon name="menu"></ion-icon>
     </button>
 
-    
+
 
     <ion-title>Home</ion-title>
 
     <ion-buttons end>
-      <button ion-button icon-only (click)="toggleDrag()">
-            <ion-icon name="move" ></ion-icon>
-         </button>
-      
+      <button ion-button icon-only (click)="toggleDrag()" tooltip="resize or move your views" event="press" arrow navTooltip>
+        <ion-icon name="move"></ion-icon>
+      </button>
+
     </ion-buttons>
 
   </ion-navbar>
@@ -21,11 +21,11 @@
 <ion-footer [color]="green" *ngIf="isDrag">
   <ion-toolbar>
     <ion-buttons end>
-      <button  ion-button round color="primary" (click)="changeSize(1)">
-        <ion-icon name="add" ></ion-icon> &nbsp;{{'MONTAGE_SIZE_INCREASE' | translate}}
+      <button ion-button round color="primary" (click)="changeSize(1)">
+        <ion-icon name="add"></ion-icon> &nbsp;{{'MONTAGE_SIZE_INCREASE' | translate}}
       </button>
-      <button  ion-button round color="primary" (click)="changeSize(-1)">
-        <ion-icon name="remove" ></ion-icon> &nbsp;{{'MONTAGE_SIZE_DECREASE' | translate}}
+      <button ion-button round color="primary" (click)="changeSize(-1)">
+        <ion-icon name="remove"></ion-icon> &nbsp;{{'MONTAGE_SIZE_DECREASE' | translate}}
       </button>
     </ion-buttons>
   </ion-toolbar>
@@ -33,16 +33,22 @@
 
 <ion-content padding>
   <h3>{{ 'HELLO' | translate}}</h3>
-
+  <i class="fa fa-user-md fa-2x"></i>
 
 
   <div class="grid">
-    <div class="grid-sizer grid-item-{{size}}"></div>
-    <figure class="grid-item grid-item-{{size}}" *ngFor="let item of cameras">
-      <img [src]="useSnapshot? item.snapshotURL: item.streamingURL" />
-      <figcaption>&nbsp;{{item.name}}</figcaption>
-      <button small (click)="killStream(item)">kill</button>
+    <div class="grid-sizer"></div>
+    <div class="grid-item grid-item-{{size}}" *ngFor="let item of montageCameras">
+      <figure>
+
+        <img holderjs *ngIf="item.isVisible && item.isPaused"    [attr.data-src]="item.placeholder" />
+        <img *ngIf="item.isVisible && !item.isPaused" [src]="useSnapshot? item.snapshotURL: item.streamingURL" />
+    
+      <figcaption>&nbsp;{{item.name}} {{item.width}}x{{item.height}}</figcaption>
     </figure>
+      <button small (click)="killStream(item)" tooltip="kill a stream" event="press" arrow>kill</button>
+      <button small (click)="startStream(item)">start</button>
+  </div>
   </div>
 
 

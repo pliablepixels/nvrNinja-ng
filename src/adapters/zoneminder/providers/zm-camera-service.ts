@@ -25,6 +25,9 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
   }
 
   
+  booty () {
+
+  }
   refreshCameraUrls(cameras) {
 
     //window.stop();
@@ -64,9 +67,13 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
             id:item.Monitor.Id,
             streamingURL: streamingUrl,
             snapshotURL: snapshotUrl,
-            function: item.Monitor.Function,
+            mode: item.Monitor.Function,
             connkey: streamConnkey,
             controllable: item.Monitor.Controllable == '1' ? true:false,
+            width:item.Monitor.Width,
+            height:item.Monitor.Height,
+            //placeholder:`holder.js/${item.Monitor.Width}x${item.Monitor.Height}/auto`
+            //placeholder:"holder.js/200x300/auto"
 
           }
           this.utils.verbose("PUSHING "+JSON.stringify(tempItem));
@@ -89,6 +96,19 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
       command:17
     };
     return this.sendCommand (cmd, camera, credentials);
+  }
+
+  startStream (camera, credentials) {
+    this.utils.info ("restarting stream for:"+camera.name);
+    let streamConnkey = this.utils.getRandomTimeVal();
+    let basepath = credentials.url+"/cgi-bin/nph-zms?maxfps=3"+this.auth.getAuthKey();
+    let streamingUrl=`${basepath}&mode=jpeg&monitor=${camera.id}&connkey=${streamConnkey}&scale=50`;
+    let snapConnkey = this.utils.getRandomTimeVal();
+    let snapshotUrl=`${basepath}&mode=single&monitor=${camera.id}&connkey=${snapConnkey}&scale=50`;
+    camera.streamingUrl = streamingUrl;
+    camera.snapshotUrl = snapshotUrl;
+    camera.connkey = streamConnkey;
+
   }
 
   sendCommand( cmd:any, camera:Camera, credentials?:any): Promise <any> {

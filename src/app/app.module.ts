@@ -15,7 +15,13 @@ import { CommonUtilsProvider } from '../providers/common-utils/common-utils';
 import { AppVersion } from '@ionic-native/app-version';
 import { CameraServiceProvider } from '../providers/camera-service/camera-service';
 import { customHttpServiceProvider } from '../providers/http-service/http-service';
+
 //import { Logger } from "angular2-logger/core"; 
+
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+
+import { TooltipsModule } from 'ionic-tooltips';
 
 
 export function exportTranslateLoader(http: Http) {
@@ -29,6 +35,9 @@ export function exportTranslateLoader(http: Http) {
   ],
   imports: [
     BrowserModule,
+
+    BrowserAnimationsModule,
+    TooltipsModule,
     HttpModule,
     IonicModule.forRoot(MyApp),
     IonicStorageModule.forRoot({

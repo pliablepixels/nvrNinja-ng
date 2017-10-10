@@ -14,7 +14,7 @@ export class CommonUtilsProvider {
 
   constructor(public toastCtrl: ToastController, public loadingCtrl: LoadingController, public alert: AlertController, public appVersion: AppVersion, public plt: Platform, public http: Http  /*public log:Logger*/) {
     console.log('Hello CommonUtilsProvider Provider');
-    this.setLogLevel("verbose");
+    this.setLogLevel("debug");
     this.setConsoleLog(true);
     
   }

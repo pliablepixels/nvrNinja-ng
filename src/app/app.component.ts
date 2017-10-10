@@ -2,6 +2,9 @@ import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+
+
+
 import {AuthServiceProvider} from '../providers/auth-service/auth-service'
 import {CameraServiceProvider} from '../providers/camera-service/camera-service'
 import { TranslateService } from '@ngx-translate/core';
