@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { DragulaService } from 'ng2-dragula/ng2-dragula';
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 import { CommonUtilsProvider } from '../../providers/common-utils/common-utils';
 import { TranslateService } from '@ngx-translate/core';
@@ -12,7 +11,7 @@ import { Request, XHRBackend, RequestOptions, Response, Http, RequestOptionsArgs
 import { HolderjsDirective } from '../../directives/holderjs.directive';
 
 
-declare var Packery, imagesLoaded: any;
+declare var Packery, imagesLoaded, Draggabilly: any;
 
 interface MontageCamera extends Camera {
   isVisible:boolean,
@@ -36,6 +35,7 @@ export class MontagePage {
   headerColor: string = "";
   image: any;
   packery: any;
+  draggies = [];
   size:number = 20;
   credentials:any;
   
@@ -49,7 +49,7 @@ export class MontagePage {
 
   }
 
-  constructor(public navCtrl: NavController, public dragulaService: DragulaService, public navParams: NavParams, public auth: AuthServiceProvider, public translate: TranslateService, public utils: CommonUtilsProvider, public camera: CameraServiceProvider, public db: DatabaseProvider, public http: Http, public sanitizer: DomSanitizer) {
+  constructor(public navCtrl: NavController,  public navParams: NavParams, public auth: AuthServiceProvider, public translate: TranslateService, public utils: CommonUtilsProvider, public camera: CameraServiceProvider, public db: DatabaseProvider, public http: Http, public sanitizer: DomSanitizer) {
 
     /*this.forceRefreshCameras()
       .then(_ => {
@@ -63,7 +63,6 @@ export class MontagePage {
 
 
   killStream (camera) {
-
     if (this.isDrag) {
       this.utils.info ("Can't use while in edit mode");
       return;
@@ -80,7 +79,6 @@ export class MontagePage {
       this.utils.info ("Can't use while in edit mode");
       return;
     }
-
     camera.isPaused = false;
     console.log ("Camera connkey was "+camera.connkey)
     this.utils.info ("Starting stream");
@@ -101,8 +99,27 @@ export class MontagePage {
     this.headerColor = this.isDrag ? 'danger' : '';
     this.useSnapshot = this.isDrag;
     // if we are getting out of edit, create new connkeys
-    if (!this.isDrag)
+    if (!this.isDrag) // not in edit mode
+    {
+      for (let i = 0; i < this.draggies.length; i++)
+      {
+          this.draggies[i].disable();
+         this.draggies[i].unbindHandles();
+      }
       this.camera.refreshCameraUrls(this.montageCameras);
+    }
+    else { // we are in edit mode
+      for (let i = 0; i < this.draggies.length; i++)
+      {
+          this.draggies[i].enable();
+         this.draggies[i].bindHandles();
+      }
+
+    }
+
+    
+
+      
   }
 
   forceRefreshCameras(): Promise<any> {
@@ -119,7 +136,7 @@ export class MontagePage {
                    isPaused:false, 
                    size:20, 
                    isSelected:false,
-                   placeholder:`holder.js/${c.width}x${c.height}?auto=yes&theme=sky&text=\?`,
+                   placeholder:`holder.js/${c.width}x${c.height}?auto=yes&theme=sky&text=...`,
                    //placeholder:`holder.js/${c.width}x${c.height}?auto=yes&font=FontAwesome&text=&#xf067;&size=50`,
                   
           }));
@@ -168,6 +185,15 @@ export class MontagePage {
           itemSelector: '.grid-item',
           percentPosition: true,  
         });
+
+        instance.packery.getItemElements().forEach ( (item) => {
+          let draggie = new Draggabilly(item);
+          instance.packery.bindDraggabillyEvents(draggie);
+          instance.draggies.push(draggie);
+          draggie.disable();
+          draggie.unbindHandles();
+        })
+
         // trigger a layout after instantiating
         instance.utils.debug("packery instantiated, forcing layout");
         instance.packery.layout();

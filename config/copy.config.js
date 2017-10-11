@@ -22,12 +22,12 @@ module.exports = {
     src: ['{{ROOT}}/node_modules/sw-toolbox/sw-toolbox.js'],
     dest: '{{BUILD}}'
   },
-  copyDragulaCss: {
-        src: './node_modules/dragula/dist/dragula.min.css',
-        dest: '{{BUILD}}'
-  },
   copyPackeryJs: {
         src: 'src/external/packery.pkgd.min.js',
+        dest: '{{BUILD}}'
+  },
+  copyDraggabilly: {
+        src: 'src/external/draggabilly.pkgd.min.js',
         dest: '{{BUILD}}'
   },
   copyImagesLoadedJs: {

@@ -50,7 +50,7 @@ export class SettingsPage {
   }
 
   ionViewWillEnter() {
-    this.readonly = true;
+  this.readonly = true;
     this.db.get('credentials')
     .then (succ => {
       this.readonly = false;
@@ -58,6 +58,8 @@ export class SettingsPage {
         this.credentials = succ;
     })
   }
+
+
 
   ionViewDidLoad() {
   }

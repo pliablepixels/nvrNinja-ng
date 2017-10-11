@@ -65,7 +65,8 @@ export class MyApp {
     this.pages = [
       { title: 'Montage', component: 'MontagePage', auth:true },
       { title: 'List', component: 'ListPage', auth:false },
-      { title: 'Settings', component: 'SettingsPage', auth:false }
+      { title: 'Settings', component: 'SettingsPage', auth:false },
+      { title: 'Repeat List', component: 'ListPage', auth:false },
 
     ];
 
