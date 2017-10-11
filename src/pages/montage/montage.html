@@ -10,7 +10,7 @@
 
     <ion-buttons end>
       <button ion-button icon-only (click)="toggleDrag()" tooltip="resize or move your views" event="press" arrow navTooltip>
-        <ion-icon name="move"></ion-icon>
+          <i class="fa fa-pencil fa-lg"></i>
       </button>
 
     </ion-buttons>
@@ -33,21 +33,34 @@
 
 <ion-content padding>
   <h3>{{ 'HELLO' | translate}}</h3>
-  <i class="fa fa-user-md fa-2x"></i>
+  
 
 
   <div class="grid">
     <div class="grid-sizer"></div>
-    <div class="grid-item grid-item-{{size}}" *ngFor="let item of montageCameras">
-      <figure>
+    <div class="grid-item grid-item-{{item.size}}" *ngFor="let item of montageCameras">
+      <figure >
 
         <img holderjs *ngIf="item.isVisible && item.isPaused"    [attr.data-src]="item.placeholder" />
-        <img *ngIf="item.isVisible && !item.isPaused" [src]="useSnapshot? item.snapshotURL: item.streamingURL" />
+        <img *ngIf="item.isVisible && !item.isPaused" [src]="useSnapshot? item.snapshotURL: item.streamingURL" (error)="errorStream(item, $event)" />
     
       <figcaption>&nbsp;{{item.name}} {{item.width}}x{{item.height}}</figcaption>
+
+      <ion-fab center middle  *ngIf="isDrag" #fab>
+          <button ion-fab mini color="danger"><ion-icon name="cog"></ion-icon></button>
+          <ion-fab-list side="top">
+                <button ion-fab mini  (click)="changeItemSize(item,1)"><ion-icon name="add"></ion-icon></button>
+          </ion-fab-list>
+          <ion-fab-list side="left">
+                <button ion-fab mini  (click)="resetItemSize(item)"><ion-icon name="refresh"></ion-icon></button>
+          </ion-fab-list>
+          <ion-fab-list side="right">
+                <button ion-fab mini (click)="changeItemSize(item,-1)"><ion-icon name="remove"></ion-icon></button>
+          </ion-fab-list>
+
+    </ion-fab>
     </figure>
-      <button small (click)="killStream(item)" tooltip="kill a stream" event="press" arrow>kill</button>
-      <button small (click)="startStream(item)">start</button>
+      
   </div>
   </div>
 

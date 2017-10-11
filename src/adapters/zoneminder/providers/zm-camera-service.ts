@@ -57,7 +57,7 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
         succ.monitors.forEach (item => {
           //let connkey = this.utils.getRandomVal(10000,50000);
           let streamConnkey = this.utils.getRandomTimeVal();
-          let basepath = credentials.url+"/cgi-bin/nph-zms?maxfps=3"+this.auth.getAuthKey();
+          let basepath = credentials.url+"/cgi-bin/nph-zms?maxfps=5&buffer=1000"+this.auth.getAuthKey();
           let streamingUrl=`${basepath}&mode=jpeg&monitor=${item.Monitor.Id}&connkey=${streamConnkey}&scale=50`;
           let snapConnkey = this.utils.getRandomTimeVal();
           let snapshotUrl=`${basepath}&mode=single&monitor=${item.Monitor.Id}&connkey=${snapConnkey}&scale=50`;
@@ -86,6 +86,7 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
     });
   }
 
+  
 
   killStream (camera, credentials) {
  
@@ -101,7 +102,7 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
   startStream (camera, credentials) {
     this.utils.info ("restarting stream for:"+camera.name);
     let streamConnkey = this.utils.getRandomTimeVal();
-    let basepath = credentials.url+"/cgi-bin/nph-zms?maxfps=3"+this.auth.getAuthKey();
+    let basepath = credentials.url+"/cgi-bin/nph-zms?maxfps=5&buffer=1000"+this.auth.getAuthKey();
     let streamingUrl=`${basepath}&mode=jpeg&monitor=${camera.id}&connkey=${streamConnkey}&scale=50`;
     let snapConnkey = this.utils.getRandomTimeVal();
     let snapshotUrl=`${basepath}&mode=single&monitor=${camera.id}&connkey=${snapConnkey}&scale=50`;

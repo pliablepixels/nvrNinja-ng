@@ -62,6 +62,11 @@ export class MontagePage {
   }
 
 
+  errorStream (camera, event) {
+    camera.isPaused = true;
+    console.log ("ERROR RECEIVED");
+  }
+
   killStream (camera) {
     if (this.isDrag) {
       this.utils.info ("Can't use while in edit mode");
@@ -167,6 +172,25 @@ export class MontagePage {
       this.packery.layout();
     },20)
    
+  }
+
+
+  changeItemSize(camera, direction:number) {
+    camera.size = camera.size + (direction * 5);
+    if (camera.size < 5) this.size = 5;
+    if (camera.size > 100) this.size = 100;
+    let instance = this;
+    setTimeout ( () => {
+      this.packery.layout();
+    },20)
+  }
+
+  resetItemSize (camera) {
+    camera.size = 20;
+    setTimeout ( () => {
+      this.packery.layout();
+    },20)
+
   }
 
   initializePackery() {
