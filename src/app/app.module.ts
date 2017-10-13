@@ -22,6 +22,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 
 import { TooltipsModule } from 'ionic-tooltips';
+import { ServerProfileProvider } from '../providers/server-profile/server-profile';
 
 
 export function exportTranslateLoader(http: Http) {
@@ -68,6 +69,7 @@ export function exportTranslateLoader(http: Http) {
     AppVersion,
     CameraServiceProvider,
     customHttpServiceProvider,
+    ServerProfileProvider,
     //Logger,
 
 

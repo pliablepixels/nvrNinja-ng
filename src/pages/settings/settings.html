@@ -20,17 +20,23 @@
 <ion-content padding>
   <ion-list>
 
+        <!-- type is url to avoid auto-capitalization. smh -->
+
+        <ion-label color="primary"  stacked>profile name</ion-label>
+        <ion-input type="text"  [(ngModel)]="currentServerProfile.name" type="text" placeholder="(a nickname)"></ion-input>
+
+
       <ion-label color="primary"  stacked>server url</ion-label>
-    
-      <!-- type is url to avoid auto-capitalization. smh -->
-    
-      <ion-input type="url"  [(ngModel)]="credentials.url" type="text" placeholder="http://server/zm"></ion-input>
+      <ion-input type="url"  [(ngModel)]="currentServerProfile.portalUrl" type="text" placeholder="(e.g. http://server/zm)"></ion-input>
+
+      <ion-label color="primary"  stacked>API url</ion-label>
+      <ion-input type="url"  [(ngModel)]="currentServerProfile.apiUrl" type="text" placeholder="(e.g. http://server/zm/api)"></ion-input>
 
       <ion-label color="primary"  stacked>username</ion-label>
-      <ion-input type="url"  [(ngModel)]="credentials.username" type="text"></ion-input>
+      <ion-input type="url"  [(ngModel)]="currentServerProfile.username" type="text"></ion-input>
 
       <ion-label color="primary" stacked>password</ion-label>
-      <ion-input [(ngModel)]="credentials.password" type="password" ></ion-input>
+      <ion-input [(ngModel)]="currentServerProfile.password" type="password" ></ion-input>
   </ion-list>
 
   

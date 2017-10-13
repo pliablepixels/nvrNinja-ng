@@ -18,13 +18,18 @@
   </ion-navbar>
 </ion-header>
 
-<ion-footer [color]="green" *ngIf="isDrag">
+<ion-footer [color]="green" *ngIf="isEdit">
   <ion-toolbar>
     <ion-buttons end>
-      <button ion-button round color="primary" (click)="changeSize(1)">
+
+        <button ion-button round color="primary" (click)="resetAllItemSize()">
+            <ion-icon name="refresh"></ion-icon> &nbsp;{{'MONTAGE_SIZE_RESET' | translate}}
+          </button>
+
+      <button ion-button round color="primary" (click)="changeAllItemSize(1)">
         <ion-icon name="add"></ion-icon> &nbsp;{{'MONTAGE_SIZE_INCREASE' | translate}}
       </button>
-      <button ion-button round color="primary" (click)="changeSize(-1)">
+      <button ion-button round color="primary" (click)="changeAllItemSize(-1)">
         <ion-icon name="remove"></ion-icon> &nbsp;{{'MONTAGE_SIZE_DECREASE' | translate}}
       </button>
     </ion-buttons>
@@ -32,10 +37,6 @@
 </ion-footer>
 
 <ion-content padding>
-  <h3>{{ 'HELLO' | translate}}</h3>
-  
-
-
   <div class="grid">
     <div class="grid-sizer"></div>
     <div class="grid-item grid-item-{{item.size}}" *ngFor="let item of montageCameras">
@@ -44,9 +45,9 @@
         <img holderjs *ngIf="item.isVisible && item.isPaused"    [attr.data-src]="item.placeholder" />
         <img *ngIf="item.isVisible && !item.isPaused" [src]="useSnapshot? item.snapshotURL: item.streamingURL" (error)="errorStream(item, $event)" />
     
-      <figcaption>&nbsp;{{item.name}} {{item.width}}x{{item.height}}</figcaption>
+      <figcaption>&nbsp;{{item.name}}</figcaption>
 
-      <ion-fab center middle  *ngIf="isDrag" #fab>
+      <ion-fab center middle  *ngIf="isEdit" #fab>
           <button ion-fab mini color="danger"><ion-icon name="cog"></ion-icon></button>
           <ion-fab-list side="top">
                 <button ion-fab mini  (click)="changeItemSize(item,1)"><ion-icon name="add"></ion-icon></button>

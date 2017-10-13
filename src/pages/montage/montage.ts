@@ -5,7 +5,7 @@ import { AuthServiceProvider } from '../../providers/auth-service/auth-service';
 import { CommonUtilsProvider } from '../../providers/common-utils/common-utils';
 import { TranslateService } from '@ngx-translate/core';
 import { CameraServiceProvider , Camera} from '../../providers/camera-service/camera-service';
-import { DatabaseProvider } from '../../providers/database/database';
+import { ServerProfileProvider, ServerProfile } from '../../providers/server-profile/server-profile';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Request, XHRBackend, RequestOptions, Response, Http, RequestOptionsArgs, Headers, ResponseContentType } from '@angular/http';
 import { HolderjsDirective } from '../../directives/holderjs.directive';
@@ -30,35 +30,21 @@ interface MontageCamera extends Camera {
 
 export class MontagePage {
   montageCameras:MontageCamera[] = []; 
-  isDrag: boolean = false;
+  isEdit: boolean = false;
   useSnapshot: boolean = true;
   headerColor: string = "";
   image: any;
   packery: any;
   draggies = [];
-  size:number = 20;
-  credentials:any;
+  currentServerProfile:ServerProfile;
   
   showArrow: boolean = true;
   duration: number = 3000;
  
-  myDragulaOptions: any = {
-    moves: (el, container, handle, siblings) => {
-      return this.isDrag;
-    }
+  
 
-  }
+  constructor(public navCtrl: NavController,  public navParams: NavParams, public auth: AuthServiceProvider, public translate: TranslateService, public utils: CommonUtilsProvider, public camera: CameraServiceProvider,public serverProfile:ServerProfileProvider, public http: Http, public sanitizer: DomSanitizer) {
 
-  constructor(public navCtrl: NavController,  public navParams: NavParams, public auth: AuthServiceProvider, public translate: TranslateService, public utils: CommonUtilsProvider, public camera: CameraServiceProvider, public db: DatabaseProvider, public http: Http, public sanitizer: DomSanitizer) {
-
-    /*this.forceRefreshCameras()
-      .then(_ => {
-      })
-      .catch(err => {
-        this.utils.presentToast(this.translate.instant('MONTAGE_MONITOR_ERROR'), "error");
-        this.utils.error("error received retrieving cameras: " + JSON.stringify(err));
-
-      })*/
   }
 
 
@@ -68,26 +54,26 @@ export class MontagePage {
   }
 
   killStream (camera) {
-    if (this.isDrag) {
+    if (this.isEdit) {
       this.utils.info ("Can't use while in edit mode");
       return;
     }
 
     camera.isPaused = true;
-    this.camera.killStream (camera, this.credentials)
+    this.camera.killStream (camera, this.currentServerProfile)
     .then (succ => console.log ("OK:"+JSON.stringify(succ)))
     .catch (err => console.log ("ERR:"+JSON.stringify(err)))
   }
 
   startStream (camera) {
-    if (this.isDrag) {
+    if (this.isEdit) {
       this.utils.info ("Can't use while in edit mode");
       return;
     }
     camera.isPaused = false;
     console.log ("Camera connkey was "+camera.connkey)
     this.utils.info ("Starting stream");
-    this.camera.startStream (camera, this.credentials);
+    this.camera.startStream (camera, this.currentServerProfile);
     console.log ("Camera connkey is "+camera.connkey)
     // we also need to toggle the DOM
     //this.useSnapshot = true;
@@ -99,12 +85,12 @@ export class MontagePage {
   }
 
   toggleDrag() {
-    this.isDrag = !this.isDrag;
-    console.log("ISDRAG=" + this.isDrag);
-    this.headerColor = this.isDrag ? 'danger' : '';
-    this.useSnapshot = this.isDrag;
+    this.isEdit = !this.isEdit;
+    console.log("isEdit=" + this.isEdit);
+    this.headerColor = this.isEdit ? 'danger' : '';
+    this.useSnapshot = this.isEdit;
     // if we are getting out of edit, create new connkeys
-    if (!this.isDrag) // not in edit mode
+    if (!this.isEdit) // not in edit mode
     {
       for (let i = 0; i < this.draggies.length; i++)
       {
@@ -129,9 +115,7 @@ export class MontagePage {
 
   forceRefreshCameras(): Promise<any> {
     this.montageCameras.length = 0;
-
-    return this.db.get('credentials')
-      .then(succ => { this.credentials = succ; return this.camera.getCameras(this.credentials) })
+      return this.camera.getCameras(this.currentServerProfile)
       .then(_cameras => {
         this.utils.info(`retrieved ${_cameras.length} cameras`);
         this.montageCameras = _cameras.map( 
@@ -163,22 +147,33 @@ export class MontagePage {
     });
   }
 
-  changeSize(num:number) {
-    this.size = this.size + (num * 5);
-    if (this.size < 5) this.size = 5;
-    if (this.size > 100) this.size = 100;
-    let instance = this;
-    setTimeout ( () => {
-      this.packery.layout();
-    },20)
+  changeAllItemSize(direction:number) {
+   for (let camera of this.montageCameras) {
+    camera.size = camera.size + (direction * 5);
+    if (camera.size < 5) camera.size = 5;
+    if (camera.size > 100) camera.size = 100; 
+   }
+   setTimeout ( () => {
+    this.packery.layout();
+  },20)
    
   }
+
+  resetAllItemSize() {
+    for (let camera of this.montageCameras) {
+     camera.size = 20;
+    }
+    setTimeout ( () => {
+     this.packery.layout();
+   },20)
+    
+   }
 
 
   changeItemSize(camera, direction:number) {
     camera.size = camera.size + (direction * 5);
-    if (camera.size < 5) this.size = 5;
-    if (camera.size > 100) this.size = 100;
+    if (camera.size < 5) camera.size = 5;
+    if (camera.size > 100) camera.size = 100;
     let instance = this;
     setTimeout ( () => {
       this.packery.layout();
@@ -242,6 +237,10 @@ export class MontagePage {
   }
 
   ionViewWillEnter() {
+    this.currentServerProfile = this.serverProfile.getCurrentServer();
+    if (!this.currentServerProfile) {
+      this.utils.error (">>> Bad Error: there is no current server. How are we inside Montage?")
+    }
     
   }
 

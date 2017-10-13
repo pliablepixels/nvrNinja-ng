@@ -15,6 +15,10 @@ export class DatabaseProvider {
     console.log('Hello DatabaseProvider Provider');
   }
 
+  init() {
+    return this.storage.ready();
+  }
+
   getDriver() {
     return this.storage.driver;
   }

@@ -1,62 +1,113 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {DatabaseProvider} from '../../providers/database/database'
-import {CommonUtilsProvider} from '../../providers/common-utils/common-utils'
+import { CommonUtilsProvider } from '../../providers/common-utils/common-utils'
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service'
 import { TranslateService } from '@ngx-translate/core';
+import { ServerProfileProvider, ServerProfile, ServerProfileList, AuthType } from '../../providers/server-profile/server-profile';
+
+
 
 @IonicPage()
 @Component({
   selector: 'page-settings',
   templateUrl: 'settings.html',
-  
+
 })
 export class SettingsPage {
 
-  readonly:boolean = true;
+  readonly: boolean = true;
 
-   credentials = {
-      url: '/zm',
-      username: '',
-      password: '',
+  serverProfileList: ServerProfileList = { currentName: "", profiles: [] };
+  currentServerProfile: ServerProfile = {
+    name: '',
+    apiUrl: '/zm/api',
+    portalUrl: '/zm',
+    type: AuthType.userpass,
+    username: '',
+    password: '',
+  }
+
+  constructor(public navCtrl: NavController, public navParams: NavParams, public auth: AuthServiceProvider, public utils: CommonUtilsProvider, public translate: TranslateService, public serverProfile: ServerProfileProvider) {
+
+    let spl = this.serverProfile.getServerProfileList();
+    if (spl) {
+      this.serverProfileList = spl;
+      this.currentServerProfile = this.serverProfile.getCurrentServer();
+
     }
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public db:DatabaseProvider, public auth:AuthServiceProvider, public utils:CommonUtilsProvider, public translate:TranslateService) {
   }
 
 
 
   clear() {
-    this.credentials = {
-      url: '',
+    this.currentServerProfile = {
+      name: '',
+      apiUrl: '/zm/api',
+      portalUrl: '/zm',
+      type: AuthType.userpass,
       username: '',
       password: '',
+
 
     }
 
   }
 
-  save() { //
-    this.utils.debug ("saving credentials...");
-    this.db.set('credentials',this.credentials);
-    this.auth.login(this.credentials)
-    .then (_ => {
-      this.utils.presentToast(this.translate.instant("SUCCESS_LOGIN"));
-    })
-    .catch (err=> {
-      this.utils.error ("re-login error "+JSON.stringify(err));
-      this.utils.presentToast(this.translate.instant("ERROR_LOGIN"),"error");
-    })
+  save() {
+
+    this.utils.debug("saving profile...");
+    if (!this.currentServerProfile.name || !this.currentServerProfile.apiUrl!) {
+      this.utils.presentToast(this.translate.instant("SETTINGS_MISSING_DATA"), "error");
+      return;
+
+    }
+
+    // remove trailing slash if any
+    this.currentServerProfile.apiUrl = this.currentServerProfile.apiUrl.replace(/\/+$/, "");
+    this.currentServerProfile.portalUrl = this.currentServerProfile.portalUrl.replace(/\/+$/, "");
+
+    console.log ("LIST BEFORE EDIT " + JSON.stringify (this.serverProfileList));
+    let found = false;
+    let i=0;
+    for (;i < this.serverProfileList.profiles.length ; i++) {
+      if (this.serverProfileList.profiles[i].name.toLowerCase() == this.currentServerProfile.name.toLowerCase()) {
+
+        found = true;
+        break;
+       
+      }
+    }
+    if (found) {// overwrite
+      this.serverProfileList.profiles[i] = this.currentServerProfile;
+      console.log ("Ovewriting profile...")
+    }
+    else {
+      console.log ("New profile...");
+      this.serverProfileList.profiles.push(Object.assign({},this.currentServerProfile));
+    }
+    this.serverProfileList.currentName = this.currentServerProfile.name;
+
+    console.log("SAVING " + JSON.stringify(this.serverProfileList));
+
+   
+
+    this.serverProfile.saveServerProfileList(this.serverProfileList)
+      .then(_ => { return this.auth.login(this.currentServerProfile) })
+      .then(_ => {
+        this.utils.presentToast(this.translate.instant("SUCCESS_LOGIN"));
+      })
+      .catch(err => {
+        this.utils.error("re-login error " + JSON.stringify(err));
+        this.utils.presentToast(this.translate.instant("ERROR_LOGIN"), "error");
+      })
   }
 
+
   ionViewWillEnter() {
-  this.readonly = true;
-    this.db.get('credentials')
-    .then (succ => {
-      this.readonly = false;
-      if (succ != null)
-        this.credentials = succ;
-    })
+    this.readonly = false;
+    let sp = this.serverProfile.getCurrentServer();
+    if (sp) this.currentServerProfile = sp;
   }
 
 

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import {constants} from '../../constants/constants';
 import 'rxjs/add/operator/map';
+import {ServerProfileProvider, ServerProfile} from '../../providers/server-profile/server-profile';
 
 /*
   Generated class for the CameraServiceProvider provider.
@@ -35,7 +36,7 @@ export  class CameraServiceProvider {
     console.log('Hello CameraServiceProvider Provider');
   }
 
-  getCameras(credentials?): Promise <Camera[]> {
+  getCameras(sp?:ServerProfile): Promise <Camera[]> {
     throw constants.NOT_IMPLEMENTED;
   }
 
@@ -43,15 +44,15 @@ export  class CameraServiceProvider {
     return;
   }
 
-  killStream (camera:any, credentials?:any): Promise <any> {
+  killStream (camera:any, sp?:ServerProfile): Promise <any> {
     throw constants.NOT_IMPLEMENTED;
   }
 
-  startStream (camera:any, credentials?:any)  {
+  startStream (camera:any, sp?:ServerProfile)  {
     throw constants.NOT_IMPLEMENTED;
   }
 
-  sendCommand(cmd:any, camera:Camera, credentials?:any ): Promise <any> {
+  sendCommand(cmd:any, camera:Camera, sp?:ServerProfile ): Promise <any> {
     throw constants.NOT_IMPLEMENTED;
 
   }

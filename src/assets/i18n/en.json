@@ -8,7 +8,10 @@
 
   "MONTAGE_MONITOR_ERROR": "Error retrieving monitors",
   "MONTAGE_SIZE_INCREASE": "grow",
-  "MONTAGE_SIZE_DECREASE": "shrink"
+  "MONTAGE_SIZE_DECREASE": "shrink",
+  "MONTAGE_SIZE_RESET": "reset",
+
+  "SETTINGS_MISSING_DATA": "No name or API URL specified"
 
     
 }

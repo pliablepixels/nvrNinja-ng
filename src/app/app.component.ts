@@ -66,8 +66,6 @@ export class MyApp {
       { title: 'Montage', component: 'MontagePage', auth:true },
       { title: 'List', component: 'ListPage', auth:false },
       { title: 'Settings', component: 'SettingsPage', auth:false },
-      { title: 'Repeat List', component: 'ListPage', auth:false },
-
     ];
 
   }
@@ -75,7 +73,8 @@ export class MyApp {
   
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
+      this.statusBar.overlaysWebView(false);
+      this.statusBar.backgroundColorByHexString('#444444');
       this.splashScreen.hide();
 
 

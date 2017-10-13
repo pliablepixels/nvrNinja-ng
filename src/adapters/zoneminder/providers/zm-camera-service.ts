@@ -12,6 +12,7 @@ import {constants} from '../../../constants/constants';
 import {CameraServiceProvider, Camera} from '../../../providers/camera-service/camera-service';
 import {CommonUtilsProvider} from '../../../providers/common-utils/common-utils';
 import {AuthServiceProvider} from '../../../providers/auth-service/auth-service';
+import {ServerProfileProvider, ServerProfile} from '../../../providers/server-profile/server-profile'
 
 
 @Injectable()
@@ -24,10 +25,7 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
    
   }
 
-  
-  booty () {
 
-  }
   refreshCameraUrls(cameras) {
 
     //window.stop();
@@ -46,18 +44,18 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
   }
   
 
-  getCameras(credentials): Promise <Camera[]> {
+  getCameras(sp:ServerProfile): Promise <Camera[]> {
     return new Promise((resolve,reject) => {
       let cameras:Camera[] = [];
-      let url = credentials.url;
-      this.http.get (url+'/api/monitors.json', {withCredentials:true})
+      let url = sp.apiUrl;
+      this.http.get (url+'/monitors.json', {withCredentials:true})
       .map (res => res.json())
       .toPromise()
       .then ( succ => {
         succ.monitors.forEach (item => {
           //let connkey = this.utils.getRandomVal(10000,50000);
           let streamConnkey = this.utils.getRandomTimeVal();
-          let basepath = credentials.url+"/cgi-bin/nph-zms?maxfps=5&buffer=1000"+this.auth.getAuthKey();
+          let basepath = sp.portalUrl+"/cgi-bin/nph-zms?maxfps=5&buffer=1000"+this.auth.getAuthKey();
           let streamingUrl=`${basepath}&mode=jpeg&monitor=${item.Monitor.Id}&connkey=${streamConnkey}&scale=50`;
           let snapConnkey = this.utils.getRandomTimeVal();
           let snapshotUrl=`${basepath}&mode=single&monitor=${item.Monitor.Id}&connkey=${snapConnkey}&scale=50`;
@@ -88,7 +86,7 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
 
   
 
-  killStream (camera, credentials) {
+  killStream (camera, sp:ServerProfile) {
  
     let cmd= {
       view:'request',
@@ -96,13 +94,13 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
       connkey:camera.connkey,
       command:17
     };
-    return this.sendCommand (cmd, camera, credentials);
+    return this.sendCommand (cmd, camera, sp);
   }
 
-  startStream (camera, credentials) {
+  startStream (camera, sp:ServerProfile) {
     this.utils.info ("restarting stream for:"+camera.name);
     let streamConnkey = this.utils.getRandomTimeVal();
-    let basepath = credentials.url+"/cgi-bin/nph-zms?maxfps=5&buffer=1000"+this.auth.getAuthKey();
+    let basepath = sp.portalUrl+"/cgi-bin/nph-zms?maxfps=5&buffer=1000"+this.auth.getAuthKey();
     let streamingUrl=`${basepath}&mode=jpeg&monitor=${camera.id}&connkey=${streamConnkey}&scale=50`;
     let snapConnkey = this.utils.getRandomTimeVal();
     let snapshotUrl=`${basepath}&mode=single&monitor=${camera.id}&connkey=${snapConnkey}&scale=50`;
@@ -112,7 +110,7 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
 
   }
 
-  sendCommand( cmd:any, camera:Camera, credentials?:any): Promise <any> {
+  sendCommand( cmd:any, camera:Camera, sp:ServerProfile): Promise <any> {
     this.utils.info ("sending control command:"+cmd);
     let headers = new Headers({
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -132,7 +130,7 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
     //console.log ("url="+credentials.url);
 
 
-    return this.http.post (credentials.url+'/index.php',data, options)
+    return this.http.post (sp.portalUrl+'/index.php',data, options)
     .toPromise()
 
 

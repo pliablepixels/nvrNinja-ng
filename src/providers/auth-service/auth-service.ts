@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http} from '@angular/http';
 import {constants} from '../../constants/constants';
+import {ServerProfile} from '../../providers/server-profile/server-profile';
 
 
 
@@ -14,19 +15,19 @@ export  class AuthServiceProvider {
   }
 
 
-  getVersion(credentials?): Promise <string> {
+  getVersion(sp:ServerProfile): Promise <string> {
     throw constants.NOT_IMPLEMENTED;
   }
 
-  login (credentials): Promise <string> {
+  login (sp:ServerProfile): Promise <string> {
     throw constants.NOT_IMPLEMENTED;
   }
 
-  isAuthEnabled(credentials): Promise <boolean> {
+  isAuthEnabled(sp:ServerProfile): Promise <boolean> {
     throw constants.NOT_IMPLEMENTED;
   }
 
-  logout(urcredentialsl): Promise <any> {
+  logout(sp:ServerProfile): Promise <any> {
     throw constants.NOT_IMPLEMENTED;
   }
 

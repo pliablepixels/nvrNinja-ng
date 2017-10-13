@@ -10,6 +10,7 @@ import 'rxjs/add/operator/toPromise';
 import {constants} from '../../../constants/constants';
 import {AuthServiceProvider} from '../../../providers/auth-service/auth-service';
 import {CommonUtilsProvider} from '../../../providers/common-utils/common-utils';
+import {ServerProfile} from '../../../providers/server-profile/server-profile';
 
 
 /**
@@ -19,6 +20,8 @@ import {CommonUtilsProvider} from '../../../providers/common-utils/common-utils'
  * @class ZmAuthServiceProvider
  * @extends {AuthServiceProvider}
  */
+
+ 
 @Injectable()
 export class ZmAuthServiceProvider extends AuthServiceProvider {
 
@@ -40,9 +43,9 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
     * @returns {Promise <string>} 
     * @memberof ZmAuthServiceProvider
     */
-   getVersion(credentials): Promise <string> {
+   getVersion(sp:ServerProfile): Promise <string> {
     return new Promise ((resolve, reject) => {
-      this.http.get (credentials.url+'/api/host/getVersion.json', {withCredentials:true})
+      this.http.get (sp.apiUrl+'/api/host/getVersion.json', {withCredentials:true})
       .map (res => res.json())
       .toPromise()
       .then (resp => resolve(resp.version) )
@@ -69,9 +72,9 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
    * @returns {Promise <any>} 
    * @memberof ZmAuthServiceProvider
    */
-  logout(credentials): Promise <any> {
+  logout(sp:ServerProfile): Promise <any> {
     this._isLoggedIn = false;
-    let url = credentials.url;
+    let url = sp.portalUrl;
     this.utils.info("Logging out of "+url+'/index.php?view=logout');
     let headers = new Headers({
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -90,10 +93,10 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
     return this.authKey;
   }
 
-  isAuthEnabled(credentials): Promise <boolean> {
+  isAuthEnabled(sp:ServerProfile): Promise <boolean> {
     return new Promise ( (resolve,reject) => {
-      let url = credentials.url;
-      this.http.get (url+'/api/configs/viewByName/ZM_OPT_USE_AUTH.json', {withCredentials:true})
+      let url = sp.apiUrl;
+      this.http.get (url+'/configs/viewByName/ZM_OPT_USE_AUTH.json', {withCredentials:true})
       .map (res => res.json())
       .toPromise()
       .then (results => {
@@ -120,14 +123,14 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
     })
   }
 
-  login (credentials): Promise <any> {
-    return this.logout (credentials) // first logout
+  login (sp:ServerProfile): Promise <any> {
+    return this.logout (sp) // first logout
     .then (_ => {
-      return this.isAuthEnabled(credentials) // is auth enabled?
+      return this.isAuthEnabled(sp) // is auth enabled?
       .then (succ => {
         this.utils.debug ("isAuthEnabled:"+succ);
         if (succ) {
-          return this._login(credentials) // if yes, re-login
+          return this._login(sp) // if yes, re-login
           .then (succ=> {this.utils.debug (`Logged in with: ${succ}`); this._isLoggedIn = true;})
 
         }
@@ -136,15 +139,15 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
     })
   }
   
-  _login(credentials): Promise <any> {
+  _login(sp:ServerProfile): Promise <any> {
     return new Promise ((resolve, reject) => {
       const loginString = "var currentView = 'console'";
       let data = new URLSearchParams();
       data.append('action', 'login');
       data.append('view', 'console');
-      data.append('username', credentials.username);
-      data.append('password', credentials.password);
-      let url = credentials.url.replace(/\/+$/, ""); // remove trailing slash if any
+      data.append('username', sp.username);
+      data.append('password', sp.password);
+      let url = sp.portalUrl;
       let headers = new Headers({
         'Content-Type': 'application/x-www-form-urlencoded',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -153,8 +156,8 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
 
       let options = new RequestOptions( {headers:headers, withCredentials: true });
       
-      this.utils.debug ("posting to "+ data.toString()+ " with "+credentials.url) 
-      this.http.post (credentials.url+'/index.php',data, options)
+      this.utils.debug ("posting to "+ data.toString()+ " with "+sp.portalUrl) 
+      this.http.post (sp.portalUrl+'/index.php',data, options)
       .toPromise()
       .then (results => {
         let body = results.text();
@@ -167,7 +170,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
           try {
             let re = constants.LOGIN_STRING_MATCH;
             let mid = Number(body.match(re)[1]);
-            this.http.get (credentials.url+'/?view=watch&mid='+mid, {withCredentials:true})
+            this.http.get (sp.portalUrl+'/?view=watch&mid='+mid, {withCredentials:true})
             .toPromise()
             .then (results => {
               //console.log ("AUTH PARSE=" + results.text())
@@ -180,7 +183,7 @@ export class ZmAuthServiceProvider extends AuthServiceProvider {
             // coming here means login was ok, but no auth key
             // possibilties = no auth or user=&pass=
             .catch (e => {
-              this.authKey = `&user=${credentials.username}&pass=${credentials.password}`
+              this.authKey = `&user=${sp.username}&pass=${sp.password}`
               resolve (this.authKey)
               //reject (constants.PARSE_ERROR)
             })
