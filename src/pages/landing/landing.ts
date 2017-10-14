@@ -20,6 +20,7 @@ export class LandingPage {
   public serverProfile:ServerProfileProvider,
   public translate:TranslateService, public app:App, public db:DatabaseProvider) {
    
+    console.log('Hello LandingPage');
     this.utils.setLogLevel("debug");
     this.utils.setConsoleLog(true);
 

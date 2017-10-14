@@ -5,12 +5,14 @@ import { TranslateModule } from '@ngx-translate/core';
 import { HolderjsDirective } from '../../directives/holderjs.directive';
 
 
+
 import { TooltipsModule } from 'ionic-tooltips';
 
 @NgModule({
   declarations: [
     MontagePage,
     HolderjsDirective,
+    
     
   ],
   imports: [

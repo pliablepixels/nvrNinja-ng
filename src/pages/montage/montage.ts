@@ -9,6 +9,9 @@ import { ServerProfileProvider, ServerProfile } from '../../providers/server-pro
 import { DomSanitizer } from '@angular/platform-browser';
 import { Request, XHRBackend, RequestOptions, Response, Http, RequestOptionsArgs, Headers, ResponseContentType } from '@angular/http';
 import { HolderjsDirective } from '../../directives/holderjs.directive';
+import { Events } from 'ionic-angular';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/forkJoin';
 
 
 declare var Packery, imagesLoaded, Draggabilly: any;
@@ -40,11 +43,56 @@ export class MontagePage {
   
   showArrow: boolean = true;
   duration: number = 3000;
- 
+
+  private _profileSub: (data:any) => void;
+
+  constructor(public navCtrl: NavController,  public navParams: NavParams, public auth: AuthServiceProvider, public translate: TranslateService, public utils: CommonUtilsProvider, public camera: CameraServiceProvider,public serverProfile:ServerProfileProvider, public http: Http, public sanitizer: DomSanitizer, public events:Events) {
+
+    console.log('Hello MontagePage with montageCameras length='+this.montageCameras.length);
+
+    this.utils.debug ("subscribing to events");
+    this._profileSub = (data) => {this.serverProfileChanged(data)};
+    this.events.subscribe('serverProfile:changed', this._profileSub); 
+  }
+
+  triggerEvent(data) {
+    this.serverProfile.dummy();
+  }
+
+  serverProfileChanged(data) {
+    console.log ("MONTAGE SERVER PROFILE CHANGED:" + JSON.stringify(data));
+    //console.log (JSON.stringify(this.montageCameras));
+
+    let killStreams = [];
+    for (let i=0; i <this.montageCameras.length; i++) {
+      if (this.montageCameras[i].isVisible &&
+          !this.montageCameras[i].isPaused) {
+            killStreams.push(this.killStream(this.montageCameras[i]));
+
+          }
+    }
+
+    Observable.forkJoin(killStreams)
+    .subscribe (results => {
+
+      setTimeout ( () => {
+        this.destroyPackery();
+        this.forceRefreshCameras()
+        .then (_ => {
+          this.utils.verbose("calling initPackery");
+          this.initializePackery();
+        })
+        .catch(err => {
+          this.utils.presentToast(this.translate.instant('MONTAGE_MONITOR_ERROR'), "error");
+          this.utils.error("error received retrieving cameras: " + JSON.stringify(err));
+    
+        });
   
+      }, 5000)
 
-  constructor(public navCtrl: NavController,  public navParams: NavParams, public auth: AuthServiceProvider, public translate: TranslateService, public utils: CommonUtilsProvider, public camera: CameraServiceProvider,public serverProfile:ServerProfileProvider, public http: Http, public sanitizer: DomSanitizer) {
+    })
 
+    
   }
 
 
@@ -53,14 +101,14 @@ export class MontagePage {
     console.log ("ERROR RECEIVED");
   }
 
-  killStream (camera) {
+  killStream (camera) : Promise <any> {
     if (this.isEdit) {
       this.utils.info ("Can't use while in edit mode");
-      return;
+      return  Promise.resolve(true);
     }
 
     camera.isPaused = true;
-    this.camera.killStream (camera, this.currentServerProfile)
+   return this.camera.killStream (camera, this.currentServerProfile)
     .then (succ => console.log ("OK:"+JSON.stringify(succ)))
     .catch (err => console.log ("ERR:"+JSON.stringify(err)))
   }
@@ -75,13 +123,6 @@ export class MontagePage {
     this.utils.info ("Starting stream");
     this.camera.startStream (camera, this.currentServerProfile);
     console.log ("Camera connkey is "+camera.connkey)
-    // we also need to toggle the DOM
-    //this.useSnapshot = true;
-
-
-    /*setTimeout ( () => {
-      this.useSnapshot = false;
-    },20)*/
   }
 
   toggleDrag() {
@@ -89,7 +130,7 @@ export class MontagePage {
     console.log("isEdit=" + this.isEdit);
     this.headerColor = this.isEdit ? 'danger' : '';
     this.useSnapshot = this.isEdit;
-    // if we are getting out of edit, create new connkeys
+    // if we are getting out of edit, create new connections
     if (!this.isEdit) // not in edit mode
     {
       for (let i = 0; i < this.draggies.length; i++)
@@ -123,7 +164,7 @@ export class MontagePage {
                    ...c, 
                    isVisible:true, 
                    isPaused:false, 
-                   size:20, 
+                   size:40, 
                    isSelected:false,
                    placeholder:`holder.js/${c.width}x${c.height}?auto=yes&theme=sky&text=...`,
                    //placeholder:`holder.js/${c.width}x${c.height}?auto=yes&font=FontAwesome&text=&#xf067;&size=50`,
@@ -161,7 +202,7 @@ export class MontagePage {
 
   resetAllItemSize() {
     for (let camera of this.montageCameras) {
-     camera.size = 20;
+     camera.size = 40;
     }
     setTimeout ( () => {
      this.packery.layout();
@@ -181,10 +222,19 @@ export class MontagePage {
   }
 
   resetItemSize (camera) {
-    camera.size = 20;
+    camera.size = 40;
     setTimeout ( () => {
       this.packery.layout();
     },20)
+
+  }
+  destroyPackery() {
+
+    for (let i = 0; i < this.draggies.length; i++)
+    {
+        this.draggies[i].destroy();
+    }
+    this.packery.destroy();
 
   }
 
@@ -244,6 +294,12 @@ export class MontagePage {
     
   }
 
+  ionViewWillLeave() {
+    this.utils.debug ("unsubscribing from events");
+    this.events.unsubscribe('serverProfile:changed', this._profileSub);this._profileSub = undefined;
+    this.utils.debug ("destroying packery");
+    this.destroyPackery();
+  }
   ionViewDidEnter() {
     this.utils.verbose("Inside Montage Enter");
     this.getCameras() // return cached cameras || api 

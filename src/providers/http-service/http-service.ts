@@ -12,10 +12,12 @@ import 'rxjs/add/operator/map';
 
 @Injectable()
 export class customHttpServiceProvider extends Http {
-loading:any;
+
 
   constructor(backend: XHRBackend, defaultOptions: RequestOptions, public loadingCtrl:LoadingController) {
+    
     super(backend, defaultOptions);
+    console.log('Hello customHttpServiceProvider');
  
     
   }
@@ -23,15 +25,15 @@ loading:any;
   get(url: string, options?: RequestOptionsArgs): Observable<Response> {
     //console.log ("********* CUSTOM HTTP POST to:"+url);
 
-    this.loading = this.loadingCtrl.create({
+    let loading = this.loadingCtrl.create({
       spinner:"dots",
       content:'',
       showBackdrop:false,
       cssClass: 'my-loading-class'
     });
-    this.loading.present();
+    loading.present();
     return super.request(url, options)
-    .do ( _ => { this.loading.dismiss();}, _=> { this.loading.dismiss();})
+    .do ( _ => { loading.dismiss();}, _=> { loading.dismiss();})
 
 
   }
@@ -40,19 +42,19 @@ loading:any;
   
    // console.log ("POSTING " + JSON.stringify(body));
 
-    this.loading = this.loadingCtrl.create({
+    let loading = this.loadingCtrl.create({
       spinner:"dots",
       content:'',
       showBackdrop:false,
       cssClass: 'my-loading-class'
     });
-    this.loading.present();
+    loading.present();
     return super.post(url, body, options)
     .do((res: Response) => {
-         this.loading.dismiss();
+         loading.dismiss();
           this.onSuccess(res);
         }, (error: any) => {
-          this.loading.dismiss();
+          loading.dismiss();
           this.onError(error);
         })
 

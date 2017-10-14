@@ -6,6 +6,7 @@ import {CommonUtilsProvider} from '../../providers/common-utils/common-utils';
 import { DatabaseProvider } from '../../providers/database/database';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/Rx';
+import { Events } from 'ionic-angular';
 
 export enum AuthType {
   none = 0,
@@ -31,9 +32,13 @@ export interface ServerProfileList {
 @Injectable()
 export class ServerProfileProvider {
   serverProfileList:ServerProfileList = null;
+  serverObservable: any;
 
-  constructor(public db:DatabaseProvider, public utils:CommonUtilsProvider) {
+
+  constructor(public db:DatabaseProvider, public utils:CommonUtilsProvider, public events:Events) {
     console.log('Hello ServerProfileProvider Provider');
+    
+
   }
 
   init(): Promise <any> {
@@ -48,14 +53,17 @@ export class ServerProfileProvider {
 
   }
 
-  setCurrentServerProfile(sp:ServerProfile) {
-    this.serverProfileList.currentName = sp.name;
+  
+  saveServerProfileList(spl:ServerProfileList): Promise <any> {
+    this.serverProfileList = spl;
+    this.events.publish("serverProfile:changed",{foo:"A"});
+    return this.db.set ("serverProfileList",this.serverProfileList)
 
   }
 
-  saveServerProfileList(spl:ServerProfileList): Promise <any> {
-    this.serverProfileList = spl;
-    return this.db.set ("serverProfileList",this.serverProfileList)
+  dummy() {
+    console.log ("TRIGGERING DUMMY");
+    this.events.publish("serverProfile:changed",{foo:"DUMMY"});
   }
 
 
@@ -63,11 +71,17 @@ export class ServerProfileProvider {
     return this.serverProfileList;
   }
 
+  private setCurrentServerProfile(sp:ServerProfile) {
+    this.serverProfileList.currentName = sp.name;
+
+  }
+
+
   private setServerProfileForName(name:string) {
 
   }
 
-  private getServerProfileForName(name:string):ServerProfile {
+   getServerProfileForName(name:string):ServerProfile {
     name = name.toLocaleLowerCase();
     let sp:ServerProfile;
     let found:boolean = false;

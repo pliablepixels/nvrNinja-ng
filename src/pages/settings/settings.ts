@@ -4,6 +4,7 @@ import { CommonUtilsProvider } from '../../providers/common-utils/common-utils'
 import { AuthServiceProvider } from '../../providers/auth-service/auth-service'
 import { TranslateService } from '@ngx-translate/core';
 import { ServerProfileProvider, ServerProfile, ServerProfileList, AuthType } from '../../providers/server-profile/server-profile';
+import { AlertController } from 'ionic-angular';
 
 
 
@@ -27,8 +28,9 @@ export class SettingsPage {
     password: '',
   }
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public auth: AuthServiceProvider, public utils: CommonUtilsProvider, public translate: TranslateService, public serverProfile: ServerProfileProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public auth: AuthServiceProvider, public utils: CommonUtilsProvider, public translate: TranslateService, public serverProfile: ServerProfileProvider, public alertCtrl: AlertController) {
 
+    console.log('Hello SettingsPage');
     let spl = this.serverProfile.getServerProfileList();
     if (spl) {
       this.serverProfileList = spl;
@@ -38,6 +40,39 @@ export class SettingsPage {
 
   }
 
+  switchProfile() {
+    if (!this.serverProfileList.profiles.length) {
+      this.utils.presentToast ("No saved profiles", "error");
+      return;
+    }
+
+
+    let alert = this.alertCtrl.create();
+    alert.setTitle('Choose profile');
+
+    for (let i=0; i < this.serverProfileList.profiles.length; i++)  {
+      alert.addInput({
+        type: 'radio',
+        label: this.serverProfileList.profiles[i].name,
+        value: this.serverProfileList.profiles[i].name,
+        checked: false
+      });
+
+    }
+
+    alert.addButton('Cancel');
+    alert.addButton({
+      text: 'Okay',
+      handler: data => {
+        console.log('Checkbox data:', data);
+        this.currentServerProfile = this.serverProfile.getServerProfileForName(data);
+        
+      }
+    });
+    alert.present();
+  }
+
+  
 
 
   clear() {
@@ -79,7 +114,7 @@ export class SettingsPage {
       }
     }
     if (found) {// overwrite
-      this.serverProfileList.profiles[i] = this.currentServerProfile;
+      this.serverProfileList.profiles[i] = Object.assign({},this.currentServerProfile);
       console.log ("Ovewriting profile...")
     }
     else {

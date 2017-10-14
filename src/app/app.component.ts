@@ -5,6 +5,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 
 
+
 import {AuthServiceProvider} from '../providers/auth-service/auth-service'
 import {CameraServiceProvider} from '../providers/camera-service/camera-service'
 import { TranslateService } from '@ngx-translate/core';
@@ -84,6 +85,8 @@ export class MyApp {
 
   openPage(page) {
     console.log ("GOING TO "+page.component);
+  
     this.nav.setRoot(page.component, {auth:page.auth});
+
   }
 }

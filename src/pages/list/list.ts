@@ -12,7 +12,12 @@ export class ListPage {
   items: Array<{title: string, note: string, icon: string}>;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
+
+
+    console.log('Hello ListPage');
     // If we navigated to this page, we will have an item available as a nav param
+
+
     this.selectedItem = navParams.get('item');
 
     // Let's populate this page with some filler content for funzies

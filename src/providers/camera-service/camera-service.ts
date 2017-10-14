@@ -4,13 +4,6 @@ import {constants} from '../../constants/constants';
 import 'rxjs/add/operator/map';
 import {ServerProfileProvider, ServerProfile} from '../../providers/server-profile/server-profile';
 
-/*
-  Generated class for the CameraServiceProvider provider.
-
-  See https://angular.io/docs/ts/latest/guide/dependency-injection.html
-  for more info on providers and Angular DI.
-*/
-
 
 export interface Camera {
   name:string,
@@ -27,13 +20,9 @@ export interface Camera {
 }
 
 @Injectable()
-
-
 export  class CameraServiceProvider {
-
-  
   constructor(public http: Http) {
-    console.log('Hello CameraServiceProvider Provider');
+    console.log('Hello Base CameraServiceProvider Provider');
   }
 
   getCameras(sp?:ServerProfile): Promise <Camera[]> {

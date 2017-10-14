@@ -17,8 +17,6 @@ import {ServerProfileProvider, ServerProfile} from '../../../providers/server-pr
 
 @Injectable()
 export class ZmCameraServiceProvider extends CameraServiceProvider {
-
-  
   constructor(public http: Http, public utils:CommonUtilsProvider, public auth:AuthServiceProvider) {
     super(http);
     console.log('Hello ZMCameraServiceProvider Provider');
@@ -27,17 +25,13 @@ export class ZmCameraServiceProvider extends CameraServiceProvider {
 
 
   refreshCameraUrls(cameras) {
-
-    //window.stop();
     let re = /&connkey=([0-9]*)&/;
-    
     cameras.forEach (item => {
       let new_connkey_val= this.utils.getRandomTimeVal();
       let new_connkey = "&connkey="+new_connkey_val+"&";
       let tstr = item.streamingURL.replace(re,new_connkey);
       item.streamingURL = tstr;
       item.connkey = new_connkey_val;
-
       console.log (`updating ${item.name} with ${item.connkey}`);
 
     })

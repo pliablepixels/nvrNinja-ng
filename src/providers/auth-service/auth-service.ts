@@ -10,7 +10,7 @@ export  class AuthServiceProvider {
   
 
   constructor(public http: Http) {
-    console.log('Base class AuthServiceProvider Provider');
+    console.log('Hello Base class AuthServiceProvider Provider');
    
   }
 

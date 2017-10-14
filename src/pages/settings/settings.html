@@ -1,47 +1,51 @@
-<!--
-  Generated template for the SettingsPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
 
   <ion-navbar>
-      <button ion-button menuToggle>
-          <ion-icon name="menu"></ion-icon>
-        </button>
-    <ion-title>settings</ion-title>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>{{ 'SETTINGS_TITLE' | translate}}</ion-title>
+
+    <ion-buttons end>
+      <button ion-button round color="primary" (click)="switchProfile()">
+        <ion-icon name="arrow-dropdown-circle"></ion-icon> &nbsp;{{'SETTINGS_SWITCH_PROFILES' | translate}}
+      </button>
+
+    </ion-buttons>
+
   </ion-navbar>
 
 </ion-header>
 
 
 
+
+
 <ion-content padding>
   <ion-list>
 
-        <!-- type is url to avoid auto-capitalization. smh -->
+    <!-- type is url to avoid auto-capitalization. smh -->
 
-        <ion-label color="primary"  stacked>profile name</ion-label>
-        <ion-input type="text"  [(ngModel)]="currentServerProfile.name" type="text" placeholder="(a nickname)"></ion-input>
+    <ion-label color="primary" stacked>profile name</ion-label>
+    <ion-input autocomplete="off"  type="text" [(ngModel)]="currentServerProfile.name" type="text" placeholder="{{'SETTINGS_NAME_PH' | translate}}"></ion-input>
 
 
-      <ion-label color="primary"  stacked>server url</ion-label>
-      <ion-input type="url"  [(ngModel)]="currentServerProfile.portalUrl" type="text" placeholder="(e.g. http://server/zm)"></ion-input>
+    <ion-label color="primary" stacked>server url</ion-label>
+    <ion-input autocomplete="off"  type="text" [(ngModel)]="currentServerProfile.portalUrl" type="text" placeholder="{{'SETTINGS_PORTAL_PH' | translate}}"></ion-input>
 
-      <ion-label color="primary"  stacked>API url</ion-label>
-      <ion-input type="url"  [(ngModel)]="currentServerProfile.apiUrl" type="text" placeholder="(e.g. http://server/zm/api)"></ion-input>
+    <ion-label color="primary" stacked>API url</ion-label>
+    <ion-input autocomplete="off"  type="text" [(ngModel)]="currentServerProfile.apiUrl" type="text" placeholder="{{'SETTINGS_API_PH' | translate}}"></ion-input>
 
-      <ion-label color="primary"  stacked>username</ion-label>
-      <ion-input type="url"  [(ngModel)]="currentServerProfile.username" type="text"></ion-input>
+    <ion-label color="primary" stacked>username</ion-label>
+    <ion-input type="text"  autocomplete="off"  [(ngModel)]="currentServerProfile.username" type="text"></ion-input>
 
-      <ion-label color="primary" stacked>password</ion-label>
-      <ion-input [(ngModel)]="currentServerProfile.password" type="password" ></ion-input>
+    <ion-label color="primary" stacked>password</ion-label>
+    <ion-input [(ngModel)]="currentServerProfile.password" type="password"></ion-input>
   </ion-list>
 
-  
+
   <button ion-button [disabled]=readonly (click)="save()">Save</button>
   <button ion-button [disabled]=readonly color="danger" (click)="clear()">Clear</button>
-    
+
 
 </ion-content>

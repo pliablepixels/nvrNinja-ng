@@ -18,6 +18,8 @@
   </ion-navbar>
 </ion-header>
 
+
+
 <ion-footer [color]="green" *ngIf="isEdit">
   <ion-toolbar>
     <ion-buttons end>
@@ -37,7 +39,9 @@
 </ion-footer>
 
 <ion-content padding>
+  <button ion-button (click)="triggerEvent()">trigger</button>
   <div class="grid">
+    
     <div class="grid-sizer"></div>
     <div class="grid-item grid-item-{{item.size}}" *ngFor="let item of montageCameras">
       <figure >
@@ -46,6 +50,8 @@
         <img *ngIf="item.isVisible && !item.isPaused" [src]="useSnapshot? item.snapshotURL: item.streamingURL" (error)="errorStream(item, $event)" />
     
       <figcaption>&nbsp;{{item.name}}</figcaption>
+
+    
 
       <ion-fab center middle  *ngIf="isEdit" #fab>
           <button ion-fab mini color="danger"><ion-icon name="cog"></ion-icon></button>
